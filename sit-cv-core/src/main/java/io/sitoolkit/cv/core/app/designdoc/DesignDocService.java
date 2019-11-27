@@ -1,9 +1,12 @@
 package io.sitoolkit.cv.core.app.designdoc;
 
 import java.util.List;
+import java.util.SortedSet;
 
 import io.sitoolkit.cv.core.app.functionmodel.FunctionModelService;
 import io.sitoolkit.cv.core.domain.designdoc.DesignDocMenuBuilder;
+import io.sitoolkit.cv.core.domain.entrypoint.EntryPoint;
+import io.sitoolkit.cv.core.domain.entrypoint.EntryPointBuilder;
 import io.sitoolkit.cv.core.domain.menu.MenuItem;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -11,13 +14,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DesignDocService {
 
-    @NonNull
-    FunctionModelService functionModelService;
+  @NonNull FunctionModelService functionModelService;
 
-    @NonNull
-    DesignDocMenuBuilder menuBuilder;
+  @NonNull DesignDocMenuBuilder menuBuilder;
 
-    public List<MenuItem> buildMenu() {
-        return menuBuilder.build(functionModelService.getAllIds());
-    }
+  @NonNull EntryPointBuilder entryPointBuilder;
+
+  public List<MenuItem> buildMenu() {
+    return menuBuilder.build(functionModelService.getAllIds());
+  }
+
+  public SortedSet<EntryPoint> buildEntryPoint() {
+    return entryPointBuilder.build(functionModelService.getAllIds());
+  }
 }

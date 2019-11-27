@@ -1,10 +1,12 @@
 package io.sitoolkit.cv.core.app.report;
 
 import java.util.List;
+import java.util.SortedSet;
 
 import io.sitoolkit.cv.core.app.crud.CrudService;
 import io.sitoolkit.cv.core.app.designdoc.DesignDocService;
 import io.sitoolkit.cv.core.app.functionmodel.FunctionModelService;
+import io.sitoolkit.cv.core.domain.entrypoint.EntryPoint;
 import io.sitoolkit.cv.core.domain.functionmodel.FunctionModel;
 import io.sitoolkit.cv.core.domain.menu.MenuItem;
 import io.sitoolkit.cv.core.domain.project.ProjectManager;
@@ -43,11 +45,16 @@ public class ReportService {
     List<MenuItem> menuList = designDocService.buildMenu();
     reports.add(designDocReportProcessor.process(menuList));
 
-    crudService.loadMatrix().ifPresent(crudMatrix -> {
-      reports.add(crudReportProcessor.process(crudMatrix));
-    });
+    SortedSet<EntryPoint> entryPointList = designDocService.buildEntryPoint();
+    reports.add(designDocReportProcessor.processEntryPoint(entryPointList));
+
+    crudService
+        .loadMatrix()
+        .ifPresent(
+            crudMatrix -> {
+              reports.add(crudReportProcessor.process(crudMatrix));
+            });
 
     reportWriter.write(projectManager.getCurrentProject().getDir(), reports);
   }
-
 }

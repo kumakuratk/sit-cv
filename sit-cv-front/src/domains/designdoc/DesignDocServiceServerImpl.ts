@@ -5,6 +5,7 @@ import MenuItem from './MenuItem';
 import axios from 'axios';
 import CrudMatrix from './CrudMatrix';
 import Config from '@/infrastructures/Config';
+import EntryPoint from './EntryPoint';
 
 class DesignDocServiceServerImpl implements DesignDocService {
   private static INSTANCE: DesignDocServiceServerImpl;
@@ -23,6 +24,14 @@ class DesignDocServiceServerImpl implements DesignDocService {
       '/topic/designdoc/list',
       (messageBody) => callback(<MenuItem[]>JSON.parse(messageBody)),
       '/app/designdoc/list'
+    );
+  }
+
+  public fetchEntryPoint(callback: (entryPoints: EntryPoint[]) => void) {
+    WebSocketClient.subscribe(
+      '/topic/designdoc/entrypoint',
+      (messageBody) => callback(<EntryPoint[]>JSON.parse(messageBody)),
+      '/app/designdoc/entrypoint'
     );
   }
 

@@ -5,6 +5,7 @@ import CrudMatrix from './CrudMatrix';
 import ScriptLoader from '@/infrastructures/ScriptLoader';
 import { AsyncSubject } from 'rxjs';
 import Config from '@/infrastructures/Config';
+import EntryPoint from './EntryPoint';
 
 class DesignDocServiceLocalImpl implements DesignDocService {
   private static INSTANDE: DesignDocServiceLocalImpl;
@@ -33,6 +34,10 @@ class DesignDocServiceLocalImpl implements DesignDocService {
 
   public fetchMenuItems(callback: (menuItems: MenuItem[]) => void): void {
     ScriptLoader.load('assets/designdoc-list.js', callback);
+  }
+
+  public fetchEntryPoint(callback: (entryPoints: EntryPoint[]) => void): void {
+    ScriptLoader.load('assets/designdoc-entrypoint.js', callback);
   }
 
   public fetchFunctionModelDetail(

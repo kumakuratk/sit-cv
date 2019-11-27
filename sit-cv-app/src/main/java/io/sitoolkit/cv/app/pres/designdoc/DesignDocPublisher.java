@@ -13,11 +13,9 @@ import io.sitoolkit.cv.core.app.designdoc.DesignDocService;
 @Controller
 public class DesignDocPublisher implements DesignDocTreeEventListener {
 
-  @Autowired
-  DesignDocService designDocService;
+  @Autowired DesignDocService designDocService;
 
-  @Autowired
-  SimpMessagingTemplate template;
+  @Autowired SimpMessagingTemplate template;
 
   @PostConstruct
   public void init() {
@@ -29,6 +27,11 @@ public class DesignDocPublisher implements DesignDocTreeEventListener {
     template.convertAndSend("/topic/designdoc/list", designDocService.buildMenu());
   }
 
+  @MessageMapping("/designdoc/entrypoint")
+  public void publishEntryPointList() {
+    template.convertAndSend("/topic/designdoc/entrypoint", designDocService.buildEntryPoint());
+  }
+
   @RequestMapping("")
   public String index() {
     return "index.html";
@@ -38,5 +41,4 @@ public class DesignDocPublisher implements DesignDocTreeEventListener {
   public void onModify() {
     publishDesingDocList();
   }
-
 }

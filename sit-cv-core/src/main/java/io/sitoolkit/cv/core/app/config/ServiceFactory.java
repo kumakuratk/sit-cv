@@ -16,6 +16,7 @@ import io.sitoolkit.cv.core.domain.crud.CrudFinder;
 import io.sitoolkit.cv.core.domain.crud.CrudProcessor;
 import io.sitoolkit.cv.core.domain.crud.jsqlparser.CrudFinderJsqlparserImpl;
 import io.sitoolkit.cv.core.domain.designdoc.DesignDocMenuBuilder;
+import io.sitoolkit.cv.core.domain.entrypoint.EntryPointBuilder;
 import io.sitoolkit.cv.core.domain.project.ProjectManager;
 import io.sitoolkit.cv.core.domain.project.ProjectReader;
 import io.sitoolkit.cv.core.domain.project.analyze.SqlLogProcessor;
@@ -33,8 +34,8 @@ import io.sitoolkit.cv.core.domain.uml.SequenceDiagramProcessor;
 import io.sitoolkit.cv.core.domain.uml.plantuml.ClassDiagramWriterPlantUmlImpl;
 import io.sitoolkit.cv.core.domain.uml.plantuml.PlantUmlWriter;
 import io.sitoolkit.cv.core.domain.uml.plantuml.SequenceDiagramWriterPlantUmlImpl;
-import io.sitoolkit.cv.core.infra.config.CvConfigService;
 import io.sitoolkit.cv.core.infra.config.CvConfig;
+import io.sitoolkit.cv.core.infra.config.CvConfigService;
 import io.sitoolkit.cv.core.infra.graphviz.GraphvizManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -42,23 +43,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ServiceFactory {
 
-  @Getter
-  private FunctionModelService functionModelService;
+  @Getter private FunctionModelService functionModelService;
 
-  @Getter
-  private DesignDocService designDocService;
+  @Getter private DesignDocService designDocService;
 
-  @Getter
-  private CrudService crudService;
+  @Getter private CrudService crudService;
 
-  @Getter
-  private ReportService reportService;
+  @Getter private ReportService reportService;
 
-  @Getter
-  private ProjectManager projectManager;
+  @Getter private ProjectManager projectManager;
 
-  private ServiceFactory() {
-  }
+  private ServiceFactory() {}
 
   public static ServiceFactory create(Path projectDir, boolean watch) {
     return new ServiceFactory().createServices(projectDir, watch);
@@ -90,61 +85,76 @@ public class ServiceFactory {
 
     crudService = createCrudService(functionModelService, projectManager);
 
-    reportService = createReportService(functionModelService, designDocService, crudService,
-        projectManager);
+    reportService =
+        createReportService(functionModelService, designDocService, crudService, projectManager);
 
     return this;
   }
 
   protected ProjectManager createProjectManager(CvConfig config) {
     SqlLogProcessor sqlLogProcessor = new SqlLogProcessor();
-    List<ProjectReader> readers = Arrays.asList(new MavenProjectReader(sqlLogProcessor),
-        new GradleProjectReader(sqlLogProcessor));
+    List<ProjectReader> readers =
+        Arrays.asList(
+            new MavenProjectReader(sqlLogProcessor), new GradleProjectReader(sqlLogProcessor));
 
     return new ProjectManager(readers, config);
   }
 
-  protected FunctionModelService createFunctionModelService(CvConfig config,
-      ProjectManager projectManager) {
+  protected FunctionModelService createFunctionModelService(
+      CvConfig config, ProjectManager projectManager) {
     ClassDefRepository classDefRepository = new ClassDefRepositoryMemImpl(config);
-    ClassDefReader classDefReader = new ClassDefReaderJavaParserImpl(classDefRepository,
-        projectManager, config);
+    ClassDefReader classDefReader =
+        new ClassDefReaderJavaParserImpl(classDefRepository, projectManager, config);
     SequenceDiagramProcessor sequenceProcessor = new SequenceDiagramProcessor(config);
     ClassDiagramProcessor classProcessor = new ClassDiagramProcessor(config);
     GraphvizManager.initialize();
     PlantUmlWriter plantumlWriter = new PlantUmlWriter();
-    DiagramWriter<SequenceDiagram> sequenceWriter = new SequenceDiagramWriterPlantUmlImpl(
-        plantumlWriter);
+    DiagramWriter<SequenceDiagram> sequenceWriter =
+        new SequenceDiagramWriterPlantUmlImpl(plantumlWriter);
     DiagramWriter<ClassDiagram> classWriter = new ClassDiagramWriterPlantUmlImpl(plantumlWriter);
 
-    return new FunctionModelService(classDefReader, sequenceProcessor, classProcessor,
-        sequenceWriter, classWriter, classDefRepository, projectManager);
-
+    return new FunctionModelService(
+        classDefReader,
+        sequenceProcessor,
+        classProcessor,
+        sequenceWriter,
+        classWriter,
+        classDefRepository,
+        projectManager);
   }
 
   protected DesignDocService createDesignDocService(FunctionModelService functionModelService) {
     DesignDocMenuBuilder menuBuilder = new DesignDocMenuBuilder();
-    return new DesignDocService(functionModelService, menuBuilder);
+    EntryPointBuilder entryPointBuilder = new EntryPointBuilder();
+    return new DesignDocService(functionModelService, menuBuilder, entryPointBuilder);
   }
 
-  protected CrudService createCrudService(FunctionModelService functionModelService,
-      ProjectManager projectManager) {
+  protected CrudService createCrudService(
+      FunctionModelService functionModelService, ProjectManager projectManager) {
     CrudFinder crudFinder = new CrudFinderJsqlparserImpl();
     CrudProcessor crudProcessor = new CrudProcessor(crudFinder);
 
     return new CrudService(functionModelService, crudProcessor, projectManager);
   }
 
-  protected ReportService createReportService(FunctionModelService functionModelService,
-      DesignDocService designDocService, CrudService crudService, ProjectManager projectManager) {
+  protected ReportService createReportService(
+      FunctionModelService functionModelService,
+      DesignDocService designDocService,
+      CrudService crudService,
+      ProjectManager projectManager) {
     FunctionModelReportProcessor functionModelReportProcessor = new FunctionModelReportProcessor();
     DesignDocReportProcessor designDocReportProcessor = new DesignDocReportProcessor();
     CrudReportProcessor crudReportProcessor = new CrudReportProcessor();
     ReportWriter reportWriter = new ReportWriter();
 
-    return new ReportService(functionModelReportProcessor, designDocReportProcessor,
-        crudReportProcessor, reportWriter, functionModelService, designDocService, crudService,
+    return new ReportService(
+        functionModelReportProcessor,
+        designDocReportProcessor,
+        crudReportProcessor,
+        reportWriter,
+        functionModelService,
+        designDocService,
+        crudService,
         projectManager);
   }
-
 }
