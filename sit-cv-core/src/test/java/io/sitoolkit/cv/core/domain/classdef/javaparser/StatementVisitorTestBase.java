@@ -1,6 +1,6 @@
 package io.sitoolkit.cv.core.domain.classdef.javaparser;
 
-import com.github.javaparser.JavaParser;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import io.sitoolkit.cv.core.domain.classdef.MethodDef;
 import io.sitoolkit.cv.core.domain.project.Project;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 
-public class StatementVisitorTest {
+public class StatementVisitorTestBase {
 
   static Path projectDir;
 
@@ -43,7 +43,7 @@ public class StatementVisitorTest {
   }
 
   public static CompilationUnit parseFile(String path) throws IOException {
-    return JavaParser.parse(projectDir.resolve(path));
+    return StaticJavaParser.parse(projectDir.resolve(path));
   }
 
   public static MethodDef getVisitResult(

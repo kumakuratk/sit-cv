@@ -8,8 +8,8 @@ import com.github.javaparser.ast.expr.MethodReferenceExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForEachStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
-import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.ThrowStmt;
@@ -44,7 +44,7 @@ public class StatementVisitor extends VoidVisitorAdapter<VisitContext> {
   }
 
   @Override
-  public void visit(ForeachStmt foreachStmt, VisitContext context) {
+  public void visit(ForEachStmt foreachStmt, VisitContext context) {
     String scope = buildForLoopScope(foreachStmt, " : ", "for (", ")");
 
     context.startLoopContext(foreachStmt, scope);

@@ -16,20 +16,20 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class StatementVisitorTryTest extends StatementVisitorTest {
+class StatementVisitorTryTest extends StatementVisitorTestBase {
 
   static CompilationUnit compilationUnit;
 
   static CompilationUnit repositoryCompilationUnit;
 
   @BeforeAll
-  public static void init() throws IOException {
+  static void init() throws IOException {
     compilationUnit = parseFile("src/main/java/a/b/c/TryController.java");
     repositoryCompilationUnit = parseFile("src/main/java/a/b/c/ARepositoryFileImpl.java");
   }
 
   @Test
-  public void tryStatement() throws IOException {
+  void tryStatement() throws IOException {
     MethodDef result = getVisitResult(getTestMethodName());
 
     List<CvStatement> tryStatements =
@@ -67,7 +67,7 @@ public class StatementVisitorTryTest extends StatementVisitorTest {
   }
 
   @Test
-  public void nestedTryStatement() throws IOException {
+  void nestedTryStatement() throws IOException {
     MethodDef result = getVisitResult(getTestMethodName());
 
     List<CvStatement> tryStatements =
@@ -102,7 +102,7 @@ public class StatementVisitorTryTest extends StatementVisitorTest {
   }
 
   @Test
-  public void tryWithResourceStatement() throws IOException {
+  void tryWithResourceStatement() throws IOException {
     MethodDef result = getVisitResult(repositoryCompilationUnit, "ARepositoryFileImpl", "save");
 
     List<CvStatement> tryStatements =
@@ -120,7 +120,7 @@ public class StatementVisitorTryTest extends StatementVisitorTest {
     assertThat(((MethodCallDef) tryChildren.get(2)).getName(), is("write"));
   }
 
-  public MethodDef getVisitResult(String method) throws IOException {
+  private MethodDef getVisitResult(String method) throws IOException {
     return getVisitResult(compilationUnit, "TryController", method);
   }
 }

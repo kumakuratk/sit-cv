@@ -1,6 +1,6 @@
 package io.sitoolkit.cv.core.domain.classdef.javaparser;
 
-import com.github.javaparser.JavaParser;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.AccessSpecifier;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -14,7 +14,6 @@ import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.JavadocBlockTag;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedParameterDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
@@ -109,7 +108,7 @@ public class ClassDefReaderJavaParserImpl implements ClassDefReader {
     log.debug("Read java : {}", javaFile);
 
     try {
-      CompilationUnit compilationUnit = JavaParser.parse(javaFile);
+      CompilationUnit compilationUnit = StaticJavaParser.parse(javaFile);
       ClassDef classDef = new ClassDef();
       classDef.setSourceId(javaFile.toFile().getAbsolutePath());
       String typeName = compilationUnit.getPrimaryTypeName().get();
@@ -163,8 +162,8 @@ public class ClassDefReaderJavaParserImpl implements ClassDefReader {
       interfaces =
           jpf.getTypeDeclaration(typeDec).getAllAncestors().stream()
               .map(ResolvedReferenceType::getTypeDeclaration)
-              .filter(ResolvedReferenceTypeDeclaration::isInterface)
-              .map(ResolvedReferenceTypeDeclaration::getQualifiedName)
+              .filter(type -> type.get().isInterface())
+              .map(type -> type.get().getQualifiedName())
               .collect(Collectors.toSet());
 
       log.debug("{} implements interfaces: {}", typeDec.getNameAsString(), interfaces);
@@ -321,22 +320,18 @@ public class ClassDefReaderJavaParserImpl implements ClassDefReader {
     annotation
         .toNormalAnnotationExpr()
         .ifPresent(
-            nae -> {
-              nae.getPairs()
-                  .forEach(
-                      mvp -> {
-                        if (StringUtils.equals(mvp.getNameAsString(), "path")) {
-                          actionPath.append(adjust(mvp.getValue().toString()));
-                        }
-                      });
-            });
+            nae ->
+                nae.getPairs()
+                    .forEach(
+                        mvp -> {
+                          if (StringUtils.equals(mvp.getNameAsString(), "path")) {
+                            actionPath.append(adjust(mvp.getValue().toString()));
+                          }
+                        }));
 
     annotation
         .toSingleMemberAnnotationExpr()
-        .ifPresent(
-            smae -> {
-              actionPath.append(adjust(smae.getMemberValue().toString()));
-            });
+        .ifPresent(smae -> actionPath.append(adjust(smae.getMemberValue().toString())));
     return actionPath.toString();
   }
 

@@ -1,21 +1,26 @@
 package io.sitoolkit.cv.core.domain.classdef.javaparser;
 
+import com.github.javaparser.resolution.TypeSolver;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
+import com.github.javaparser.resolution.model.SymbolReference;
 import com.github.javaparser.symbolsolver.javassistmodel.JavassistFactory;
-import com.github.javaparser.symbolsolver.model.resolution.SymbolReference;
-import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.NotFoundException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClassDirTypeSolver implements TypeSolver {
 
   private static ClassDirTypeSolver instance;
@@ -25,6 +30,8 @@ public class ClassDirTypeSolver implements TypeSolver {
   private Map<String, Path> classFileMap = new HashMap<>();
 
   private ClassPool classPool = new ClassPool(false);
+
+  private static final String CLASS_SUFFIX = ".class";
 
   public static synchronized ClassDirTypeSolver get(Path classDir) {
     if (instance == null) {
@@ -36,27 +43,28 @@ public class ClassDirTypeSolver implements TypeSolver {
 
   private void addClassDir(Path classDir) {
 
-    try {
+    try (Stream<Path> paths = Files.walk(classDir)) {
       classPool.appendClassPath(classDir.toString());
       classPool.appendSystemPath();
 
-      Files.walk(classDir)
-          .filter(path -> path.getFileName().toString().endsWith(".class"))
+      paths
+          .filter(path -> path.getFileName().toString().endsWith(CLASS_SUFFIX))
           .forEach(
               path -> {
                 classFileMap.put(classFilePathToClassName(classDir, path), path);
               });
     } catch (IOException | NotFoundException e) {
-      throw new RuntimeException(e);
+      throw new IllegalArgumentException(e);
     }
   }
 
   private String classFilePathToClassName(Path classDir, Path classFilePath) {
     String classFilePathStr = classDir.relativize(classFilePath).toString();
-    if (!classFilePathStr.endsWith(".class")) {
+    if (!classFilePathStr.endsWith(CLASS_SUFFIX)) {
       throw new IllegalStateException();
     }
-    String className = classFilePathStr.substring(0, classFilePathStr.length() - ".class".length());
+    String className =
+        classFilePathStr.substring(0, classFilePathStr.length() - CLASS_SUFFIX.length());
     className = className.replace('/', '.');
     className = className.replace('$', '.');
     return className;
@@ -74,10 +82,10 @@ public class ClassDirTypeSolver implements TypeSolver {
         }
 
       } else {
-        return SymbolReference.unsolved(ResolvedReferenceTypeDeclaration.class);
+        return SymbolReference.unsolved();
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 }

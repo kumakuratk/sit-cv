@@ -33,7 +33,7 @@ public class JavaParserFacadeBuilder {
         .forEach(
             str -> {
               try {
-                combinedTypeSolver.add(JarTypeSolver.getJarTypeSolver(str));
+                combinedTypeSolver.add(new JarTypeSolver(str));
               } catch (IOException e) {
                 log.warn(e.getMessage(), e);
               }

@@ -15,36 +15,36 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class StatementVisitorLoopTest extends StatementVisitorTest {
+class StatementVisitorLoopTest extends StatementVisitorTestBase {
 
   static CompilationUnit compilationUnit;
 
   @BeforeAll
-  public static void init() throws IOException {
+  static void init() throws IOException {
     compilationUnit = parseFile("src/main/java/a/b/c/LoopController.java");
   }
 
   @Test
-  public void simpleFor() throws IOException {
+  void simpleFor() throws IOException {
     testFlatLoop(getTestMethodName());
   }
 
   @Test
-  public void forEach() throws IOException {
+  void forEach() throws IOException {
     testFlatLoop(getTestMethodName());
   }
 
   @Test
-  public void streamMethodRef() throws IOException {
+  void streamMethodRef() throws IOException {
     testFlatLoop(getTestMethodName());
   }
 
   @Test
-  public void streamLambda() throws IOException {
+  void streamLambda() throws IOException {
     testFlatLoop(getTestMethodName());
   }
 
-  public void testFlatLoop(String method) throws IOException {
+  private void testFlatLoop(String method) throws IOException {
     MethodDef methodDef = getVisitResult(compilationUnit, "LoopController", method);
 
     List<CvStatement> loopStatements =

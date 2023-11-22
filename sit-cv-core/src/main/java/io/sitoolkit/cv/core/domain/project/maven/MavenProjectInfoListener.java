@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -17,6 +18,10 @@ public class MavenProjectInfoListener implements StdoutListener {
 
   @Getter private final Project project;
   private Project recordingProject;
+  private Path buildDir;
+  private Set<Path> srcDirs;
+  private Set<Path> classPaths;
+  private Charset sourceEncodingCharset;
 
   public MavenProjectInfoListener(Path projectDir) {
     this.project = new Project(projectDir);
@@ -72,29 +77,53 @@ public class MavenProjectInfoListener implements StdoutListener {
       recordingProject = new Project(javaBaseDir);
       project.getSubProjects().add(recordingProject);
     }
+
+    if (Objects.nonNull(buildDir)) {
+      recordingProject.setBuildDir(buildDir);
+    }
+
+    if (Objects.nonNull(srcDirs)) {
+      recordingProject.setSrcDirs(srcDirs);
+    }
+
+    if (Objects.nonNull(classPaths)) {
+      recordingProject.setClasspaths(classPaths);
+    }
+
+    if (Objects.nonNull(sourceEncodingCharset)) {
+      recordingProject.setSourceEncoding(sourceEncodingCharset);
+    }
   }
 
   void recordBuildDirStr(String javaBuildDirStr) {
     if (recordingProject != null) {
       recordingProject.setBuildDir(Paths.get(javaBuildDirStr));
+    } else {
+      buildDir = Paths.get(javaBuildDirStr);
     }
   }
 
   void recordSrcDirsStr(String javaSrcDirsStr) {
     if (recordingProject != null) {
       recordingProject.setSrcDirs(splitAndTrim(javaSrcDirsStr));
+    } else {
+      srcDirs = splitAndTrim(javaSrcDirsStr);
     }
   }
 
   void recordClasspathsStr(String classpathsStr) {
     if (recordingProject != null) {
       recordingProject.setClasspaths(splitAndTrim(classpathsStr));
+    } else {
+      classPaths = splitAndTrim(classpathsStr);
     }
   }
 
   void recordSourceEncoding(String sourceEncoding) {
     if (recordingProject != null) {
       recordingProject.setSourceEncoding(Charset.forName(sourceEncoding));
+    } else {
+      sourceEncodingCharset = Charset.forName(sourceEncoding);
     }
   }
 

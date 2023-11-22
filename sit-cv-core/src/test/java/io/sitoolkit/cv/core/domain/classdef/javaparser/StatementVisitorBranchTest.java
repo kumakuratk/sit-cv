@@ -15,17 +15,17 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class StatementVisitorBranchTest extends StatementVisitorTest {
+class StatementVisitorBranchTest extends StatementVisitorTestBase {
 
   static CompilationUnit compilationUnit;
 
   @BeforeAll
-  public static void init() throws IOException {
+  static void init() throws IOException {
     compilationUnit = parseFile("src/main/java/a/b/c/BranchController.java");
   }
 
   @Test
-  public void ifStatement() throws IOException {
+  void ifStatement() throws IOException {
     MethodDef result = getVisitResult(getTestMethodName());
 
     List<CvStatement> branchStatements =
@@ -50,7 +50,7 @@ public class StatementVisitorBranchTest extends StatementVisitorTest {
   }
 
   @Test
-  public void nestedIfStatement() throws IOException {
+  void nestedIfStatement() throws IOException {
     MethodDef result = getVisitResult(getTestMethodName());
 
     List<ConditionalStatement> conditionalStatements =
@@ -79,7 +79,7 @@ public class StatementVisitorBranchTest extends StatementVisitorTest {
   }
 
   @Test
-  public void omittedIfStatement() throws IOException {
+  void omittedIfStatement() throws IOException {
     MethodDef result = getVisitResult(getTestMethodName());
 
     List<CvStatement> branchStatements =
@@ -99,7 +99,7 @@ public class StatementVisitorBranchTest extends StatementVisitorTest {
     assertThat(methodCall.getName(), is("process"));
   }
 
-  public MethodDef getVisitResult(String method) throws IOException {
+  private MethodDef getVisitResult(String method) throws IOException {
     return getVisitResult(compilationUnit, "BranchController", method);
   }
 }

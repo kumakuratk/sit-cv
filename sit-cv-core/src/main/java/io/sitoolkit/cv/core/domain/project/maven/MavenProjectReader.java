@@ -48,7 +48,10 @@ public class MavenProjectReader implements ProjectReader {
         agentJar,
         project,
         (String agentParam) -> {
-          return mvnPrj.mvnw("test", "-B", "-DargLine=" + agentParam);
+          return mvnPrj.mvnw(
+              "test",
+              "-B",
+              "-DargLine='" + agentParam + " --add-opens java.base/java.lang=ALL-UNNAMED'");
         });
     return true;
   }
