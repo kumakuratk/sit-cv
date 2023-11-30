@@ -15,6 +15,8 @@ import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -59,7 +61,8 @@ public class GradleProjectReader implements ProjectReader {
   }
 
   @Override
-  public boolean generateSqlLog(Project project, CvConfig sitCvConfig) {
+  public boolean generateSqlLog(Project project, CvConfig sitCvConfig, String testTarget) {
+    log.info("TODO test: project={}", project);
     GradleProject gradleProject = GradleProject.load(project.getDir());
 
     if (!gradleProject.available()) {
@@ -74,7 +77,12 @@ public class GradleProjectReader implements ProjectReader {
         agentJar,
         project,
         (String agentParam) -> {
-          ProcessCommand command = gradleProject.gradlew("--no-daemon", "--rerun-tasks", "test");
+          String[] gradleArgs = new String[] {"--no-daemon", "--rerun-tasks", "test"};
+          if (StringUtils.isNotBlank(testTarget)) {
+            gradleArgs = ArrayUtils.addAll(gradleArgs, "--tests", testTarget);
+          }
+
+          ProcessCommand command = gradleProject.gradlew(gradleArgs);
           command.getEnv().put("JAVA_TOOL_OPTIONS", agentParam);
           return command;
         });

@@ -109,6 +109,17 @@ java -jar sit-cv-app-1.0.0-exec.jar --cv.analyze-sql
 java -jar sit-cv-app-1.0.0-exec.jar --cv.analyze-sql --cv.report
 ```
 
+When you like to specify test, run with --cv.test option.
+That format is same to test specify option in your project.
+
+```sh
+# Test specify in maven project
+java -jar sit-cv-app-1.0.0-exec.jar --cv.analyze-sql --cv.report --cv.test=TestClass1,TestClass2#testMethod
+
+# or gradle project
+java -jar sit-cv-app-1.0.0-exec.jar --cv.analyze-sql --cv.report --cv.test=\*TestClass\*
+```
+
 ## How to Use in Your Project
 
 ### Maven Project
@@ -153,6 +164,9 @@ mvn sit-cv:run -Danalyze-sql=true
 
 # or Report Mode
 mvn sit-cv:report -Danalyze-sql=true
+
+# Specify test
+mvn sit-cv:report -Danalyze-sql=true -Dtest=TestClass1,TestClass2#testMethod
 ```
 
 ### Gradle Project
@@ -187,7 +201,7 @@ buildscript {
   }
 }
 
-apply plugin: 'sit-cv-gradle-plugin'
+apply plugin: 'io.sitoolkit.cv.sit-cv-gradle-plugin'
 ```
 
 Then you can use following commands in your project directory.
@@ -212,6 +226,9 @@ gradlew cvRun --analyze-sql
 
 # or Report Mode
 gradlew cvReport --analyze-sql
+
+# Specify test
+gradlew cvReport --analyze-sql --test=\*TestClass\*
 ```
 
 ## Configuration for Your Project

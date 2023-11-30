@@ -1,6 +1,19 @@
 
 allprojects {
   repositories {
-      jcenter()
+    jcenter()
+    mavenLocal()
   }
 }
+
+buildscript {
+  repositories {
+    jcenter()
+    mavenLocal()
+  }
+  dependencies {
+    classpath group: 'io.sitoolkit.cv', name: 'sit-cv-gradle-plugin', version: '2.0.0-SNAPSHOT'
+  }
+}
+
+apply plugin: 'io.sitoolkit.cv.sit-cv-gradle-plugin'

@@ -68,7 +68,7 @@ public class CrudService {
     return Optional.of(entryPointCrud);
   }
 
-  public void analyzeSql() {
-    projectManager.generateSqlLog();
+  public void analyzeSql(String testTarget) {
+    projectManager.generateSqlLog(testTarget);
   }
 }

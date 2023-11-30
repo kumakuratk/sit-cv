@@ -8,7 +8,8 @@ public enum SitCvApplicationOption {
   REPORT,
   PROJECT,
   ANALYZE_SQL("analyze-sql"),
-  OPEN_BROWSER("open");
+  OPEN_BROWSER("open"),
+  TEST;
 
   public static final String PREFIX = "cv";
 

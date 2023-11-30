@@ -12,10 +12,13 @@ public class AnalyzeSqlMojo extends AbstractMojo {
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
 
+  @Parameter(property = RunApplicationMojo.SPECIFY_TEST_OPTION, defaultValue = "")
+  private String testTarget;
+
   @Override
   public void execute() {
     ServiceFactory.createAndInitialize(project.getBasedir().toPath(), false)
         .getCrudService()
-        .analyzeSql();
+        .analyzeSql(testTarget);
   }
 }

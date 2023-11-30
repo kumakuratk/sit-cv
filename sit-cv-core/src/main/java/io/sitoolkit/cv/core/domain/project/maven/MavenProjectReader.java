@@ -10,8 +10,12 @@ import java.nio.file.Path;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @RequiredArgsConstructor
+@Slf4j
 public class MavenProjectReader implements ProjectReader {
 
   @NonNull private SqlLogProcessor sqlLogProcessor;
@@ -33,7 +37,8 @@ public class MavenProjectReader implements ProjectReader {
   }
 
   @Override
-  public boolean generateSqlLog(Project project, CvConfig sitCvConfig) {
+  public boolean generateSqlLog(Project project, CvConfig sitCvConfig, String testTarget) {
+    log.info("TODO test: project={}", project);
     MavenProject mvnPrj = MavenProject.load(project.getDir());
 
     if (!mvnPrj.available()) {
@@ -48,10 +53,17 @@ public class MavenProjectReader implements ProjectReader {
         agentJar,
         project,
         (String agentParam) -> {
-          return mvnPrj.mvnw(
-              "test",
-              "-B",
-              "-DargLine='" + agentParam + " --add-opens java.base/java.lang=ALL-UNNAMED'");
+          String[] mvnArgs =
+              new String[] {
+                "test",
+                "-B",
+                "-DargLine='" + agentParam + " --add-opens java.base/java.lang=ALL-UNNAMED'"
+              };
+          if (StringUtils.isNotBlank(testTarget)) {
+            mvnArgs = ArrayUtils.add(mvnArgs, "-Dtest=" + testTarget);
+          }
+
+          return mvnPrj.mvnw(mvnArgs);
         });
     return true;
   }

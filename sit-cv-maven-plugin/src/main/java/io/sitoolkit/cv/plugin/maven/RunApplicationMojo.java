@@ -18,11 +18,18 @@ public class RunApplicationMojo extends AbstractMojo {
 
   private static final String OPEN_BROWSER_OPTION = "open";
 
+  public static final String SPECIFY_TEST_OPTION = "test";
+
+  public static final String APP_OPTION_PREFIX = "--cv.";
+
   @Parameter(property = ANALYZE_SQL_OPTION, defaultValue = "false")
   private boolean analyzeSql;
 
   @Parameter(property = OPEN_BROWSER_OPTION, defaultValue = "true")
   private boolean openBrowser;
+
+  @Parameter(property = SPECIFY_TEST_OPTION, defaultValue = "")
+  private String specifyTest;
 
   @Parameter private String cvArgs;
 
@@ -52,11 +59,15 @@ public class RunApplicationMojo extends AbstractMojo {
     List<String> args = new ArrayList<>(Arrays.asList(cvArgsArray));
 
     if (analyzeSql) {
-      args.add("--cv." + ANALYZE_SQL_OPTION);
+      args.add(APP_OPTION_PREFIX + ANALYZE_SQL_OPTION);
     }
 
     if (!openBrowser) {
-      args.add("--cv." + OPEN_BROWSER_OPTION + "=false");
+      args.add(APP_OPTION_PREFIX + OPEN_BROWSER_OPTION + "=false");
+    }
+
+    if (StringUtils.isNotBlank(specifyTest)) {
+      args.add(APP_OPTION_PREFIX + SPECIFY_TEST_OPTION + "=" + specifyTest);
     }
 
     return args.toArray(new String[] {});

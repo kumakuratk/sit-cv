@@ -4,8 +4,10 @@ import io.sitoolkit.cv.app.infra.config.SitCvApplicationOption;
 import io.sitoolkit.cv.app.infra.utils.DesktopManager;
 import io.sitoolkit.cv.core.app.config.ServiceFactory;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Objects;
 import javax.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,9 +15,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
+@AllArgsConstructor
 public class SitCvApplication {
 
-  @Autowired private ApplicationContext appCtx;
+  private final ApplicationContext appCtx;
 
   public static void main(String[] args) {
     ApplicationArguments appArgs = new DefaultApplicationArguments(args);
@@ -42,7 +45,11 @@ public class SitCvApplication {
   }
 
   private static void executeAnalyzeSqlMode(ApplicationArguments appArgs) {
-    ServiceFactory.create(getProjectDir(appArgs), false).getCrudService().analyzeSql();
+    List<String> testOptions = appArgs.getOptionValues(SitCvApplicationOption.TEST.getKey());
+    String testTarget =
+        Objects.nonNull(testOptions) ? testOptions.stream().findFirst().orElse("") : "";
+
+    ServiceFactory.create(getProjectDir(appArgs), false).getCrudService().analyzeSql(testTarget);
   }
 
   private static void executeServerMode(String[] args, ApplicationArguments appArgs) {

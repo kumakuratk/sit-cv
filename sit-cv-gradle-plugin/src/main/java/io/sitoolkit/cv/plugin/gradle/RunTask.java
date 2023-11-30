@@ -13,19 +13,25 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.options.Option;
 
 public class RunTask extends JavaExec {
+  private static final String APP_OPTION_PREFIX = "--cv.";
 
   public static final String ANALYZE_SQL_OPTION = "analyze-sql";
 
   public static final String ANALYZE_SQL_DESCRIPTION =
       "Run tests and analyze SQL logs to generate a CRUD matrix";
 
-  private static final String OPEN_BROWSER_OPTION = "open";
+  public static final String TEST_TARGET_OPTION = "test";
 
-  private String stopKey = "x";
+  public static final String TEST_TARGET_DESCRIPTION =
+      "Run specified test when generate a CRUD matrix";
+
+  private static final String OPEN_BROWSER_OPTION = "open";
 
   private String cvArgs;
 
   private boolean analyzeSql;
+
+  private String testTarget;
 
   private String openBrowser;
 
@@ -45,6 +51,11 @@ public class RunTask extends JavaExec {
     this.analyzeSql = analyzeSql;
   }
 
+  @Option(option = TEST_TARGET_OPTION, description = ANALYZE_SQL_DESCRIPTION)
+  public void setTestTarget(String testTarget) {
+    this.testTarget = testTarget;
+  }
+
   @Option(
       option = OPEN_BROWSER_OPTION,
       description = "Set false to not open the browser at startup")
@@ -60,11 +71,15 @@ public class RunTask extends JavaExec {
     }
 
     if (analyzeSql) {
-      args.add("--cv." + ANALYZE_SQL_OPTION);
+      args.add(APP_OPTION_PREFIX + ANALYZE_SQL_OPTION);
+
+      if (StringUtils.isNotEmpty(testTarget)) {
+        args.add(APP_OPTION_PREFIX + TEST_TARGET_OPTION + "=" + testTarget);
+      }
     }
 
     if (!StringUtils.isEmpty(openBrowser) && openBrowser.equals("false")) {
-      args.add("--cv." + OPEN_BROWSER_OPTION + "=false");
+      args.add(APP_OPTION_PREFIX + OPEN_BROWSER_OPTION + "=false");
     }
 
     return args;

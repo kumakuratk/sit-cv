@@ -3,6 +3,7 @@ package io.sitoolkit.cv.core.domain.classdef.javaparser;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.AccessSpecifier;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -113,7 +114,11 @@ public class ClassDefReaderJavaParserImpl implements ClassDefReader {
       classDef.setSourceId(javaFile.toFile().getAbsolutePath());
       String typeName = compilationUnit.getPrimaryTypeName().get();
       classDef.setName(typeName);
-      classDef.setPkg(compilationUnit.getPackageDeclaration().get().getNameAsString());
+      classDef.setPkg(
+          compilationUnit
+              .getPackageDeclaration()
+              .orElse(new PackageDeclaration())
+              .getNameAsString());
 
       compilationUnit
           .getClassByName(typeName)

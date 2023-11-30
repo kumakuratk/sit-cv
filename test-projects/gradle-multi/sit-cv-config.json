@@ -1,0 +1,21 @@
+{
+  "override": true,
+  "lifelines": [
+    {
+      "name": ".*Controller.*",
+      "entryPoint": true
+    },
+    {
+      "name": ".*Service.*"
+    },
+    {
+      "name": ".*Repository.*",
+      "dbAccess": true
+    }
+  ],
+  "sqlLogPattern": {
+    "start": ".*Pattern before SQL starts.*",
+    "end": ".*Pattern after SQL ends.*"
+  },
+  "showAccessor": false
+}

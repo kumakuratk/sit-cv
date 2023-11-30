@@ -40,10 +40,7 @@ public class ProjectManager {
 
     currentProject
         .getAllProjects()
-        .forEach(
-            proj -> {
-              DelombokProcessor.of(proj).ifPresent(proj::setPreProcessor);
-            });
+        .forEach(proj -> DelombokProcessor.of(proj).ifPresent(proj::setPreProcessor));
   }
 
   public Optional<List<SqlPerMethod>> getSqlLog() {
@@ -51,7 +48,7 @@ public class ProjectManager {
         currentProject.getSqlLogPath(), new TypeReference<List<SqlPerMethod>>() {});
   }
 
-  public void generateSqlLog() {
-    readers.stream().filter(reader -> reader.generateSqlLog(currentProject, cvConfig)).findFirst();
+  public void generateSqlLog(String testTarget) {
+    readers.forEach(reader -> reader.generateSqlLog(currentProject, cvConfig, testTarget));
   }
 }

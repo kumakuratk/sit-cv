@@ -20,6 +20,7 @@ public class CvConfig {
 
   private String jarList = "jar-list.txt";
   private String javaFilePattern = ".*\\.(java|class)$";
+  private String testTarget = "";
 
   private boolean override = false;
   private boolean exception = true;

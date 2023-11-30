@@ -3,6 +3,7 @@ package io.sitoolkit.cv.core.domain.project;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,7 +82,9 @@ public class Project {
   }
 
   public Path getWorkDir() {
-    return dir.resolve(buildDir).resolve(WORK_DIR);
+    return Objects.isNull(buildDir)
+        ? dir.resolve(WORK_DIR)
+        : dir.resolve(buildDir).resolve(WORK_DIR);
   }
 
   public boolean existsWorkDir() {
@@ -103,7 +106,7 @@ public class Project {
   }
 
   Optional<Project> findProjectFromSrc(Path inputFile) {
-    if (srcDirs.stream().anyMatch(dir -> inputFile.startsWith(dir))) {
+    if (srcDirs.stream().anyMatch(inputFile::startsWith)) {
       return Optional.of(this);
 
     } else {

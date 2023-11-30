@@ -12,6 +12,9 @@ public class ReportMojo extends AbstractMojo {
   @Parameter(property = RunApplicationMojo.ANALYZE_SQL_OPTION, defaultValue = "false")
   private boolean analyzeSql;
 
+  @Parameter(property = RunApplicationMojo.SPECIFY_TEST_OPTION, defaultValue = "")
+  private String testTarget;
+
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
 
@@ -21,7 +24,7 @@ public class ReportMojo extends AbstractMojo {
         ServiceFactory.createAndInitialize(project.getBasedir().toPath(), false);
 
     if (analyzeSql) {
-      factory.getCrudService().analyzeSql();
+      factory.getCrudService().analyzeSql(testTarget);
     }
 
     factory.getReportService().export();

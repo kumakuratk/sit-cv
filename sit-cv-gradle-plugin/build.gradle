@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.10.1'
     implementation group: 'io.sitoolkit.cv', name: 'sit-cv-app', version: version
 }
 

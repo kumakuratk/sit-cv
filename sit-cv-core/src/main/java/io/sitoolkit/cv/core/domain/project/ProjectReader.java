@@ -8,5 +8,5 @@ public interface ProjectReader {
 
   Optional<Project> read(Path projectDir);
 
-  boolean generateSqlLog(Project project, CvConfig cvConfig);
+  boolean generateSqlLog(Project project, CvConfig cvConfig, String testTarget);
 }
